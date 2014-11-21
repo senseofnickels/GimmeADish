@@ -1,3 +1,5 @@
+Gimme A Dish! is a Yelp review processor which isolates what people are saying about particular dishes at a restaurant.
+
 [train_classifier.py]
 This script trains the classifier from a set of 'relevant' and a set of 'not-relevant' sample data (sentences output from process.py). This script loads 'classifier-relevant.txt' and 'classifier-notrelevant.txt' and builds a training set for the relevant and not-relevant classes.
 
