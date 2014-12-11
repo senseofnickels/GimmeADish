@@ -90,7 +90,7 @@ def get_sentences_from_json(json_review):
 
 def remove_stopwords(tf):
     sw = open('stoplist', 'r')
-    #not implemented
+
     sw.close()
 
 def main():

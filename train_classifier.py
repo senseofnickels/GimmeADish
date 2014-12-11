@@ -1,8 +1,9 @@
 import re
 import math
+import pickle
 
 def remove_stop_words(tokens):
-    stopwords = ['the','a','of','is','was','and','be', 'to', 'as', 'my', 'for', 'i', 'it',]
+    stopwords = ['the','a','of','is','was','and','be', 'to', 'as', 'my', 'for', 'i', 'it', 'in']
 
     tokens = [ t for t in tokens if t not in stopwords]
     return tokens
@@ -10,9 +11,8 @@ def remove_stop_words(tokens):
 def get_ngrams(sentence, n=1):
     start = '<'
     end = '>'
-    #tokenize
     tokens = [str(word) for word in re.findall(r'\w+', sentence.lower())]
-    #tokens = remove_stop_words(tokens)
+    tokens = remove_stop_words(tokens)
     if len(tokens) == 0:
         return []
     for i in range(n-1):
@@ -74,8 +74,25 @@ def prepare_sentence(sentence):
     sentence = re.sub(r'[^\w^\s]', '', sentence)
     return sentence
 
+def get_relevant_sentences(review, relevant, not_relevant, n):
+    relevant_sentences = []
+    for sentence in review:
+        if predict_class(prepare_sentence(sentence), relevant, not_relevant, n) == 'Relevant':
+            relevant_sentences.append(sentence)
+
+    return relevant_sentences
+
+def export_relevance(relevant, not_relevant):
+    f = open('relevant-data.dat','wb')
+    pickle.dump(relevant, f)
+    f.close()
+
+    f = open('not-relevant-data.dat','wb')
+    pickle.dump(not_relevant, f)
+    f.close()
+
 def main():
-    n = 2 #how many terms in n-gram
+    n = 1 #how many terms in n-gram
     
     relevant = {}
     rel_docs = []
@@ -118,10 +135,11 @@ def main():
         print i
     print "Total number of tokens in 'not relevant' class:", not_rel_word_total, '\n'
 
-    sentence = ''
-    while sentence != 'q':
-        sentence = raw_input("Enter a sentence to test (or 'q' to quit): ")
-        print predict_class(prepare_sentence(sentence), relevant, not_relevant, n)
+    review = ['7th time here and still has great service and friendly staff members.','This time around my cauliflower side was undercooked and had water in the bottom and was sent back.',"The Brussel sprouts were some of the best I've ever had, compared to Uchi in Austin's which are just as good.",'This time around I tried the lamb which is EH ok','would not order it again.',"Had little to no flavor and it didn't have a demi-glaze or anything to give it that BANG just kind of lamb chops on a plate....","Now the Lusty Lucy drink and cowboy rib-eye you can't go wrong with."]
+    for s in get_relevant_sentences(review, relevant, not_relevant, n):
+        print s + "\n"
+
+    export_relevance(relevant, not_relevant)
 
 
 if __name__ == '__main__':
